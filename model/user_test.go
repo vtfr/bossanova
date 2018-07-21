@@ -9,7 +9,7 @@ import (
 func TestUser(t *testing.T) {
 	g := goblin.Goblin(t)
 	g.Describe("User", func() {
-		g.It("Should set and verify a password sucessfully", func() {
+		g.It("Should set and verify a password successfully", func() {
 			user := &model.User{}
 			user.SetPassword("right")
 
