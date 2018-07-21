@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"net/http"
 	"os"
 
@@ -35,7 +34,7 @@ func Start() error {
 
 	authentication := service.NewAuthenticator(store, []byte("test"))
 
-	authorization, err := ReadAuthorizationConfig()
+	authorization, err := newAuthorizator()
 	if err != nil {
 		return err
 	}
@@ -44,21 +43,15 @@ func Start() error {
 	return http.ListenAndServe(config.Address, Route(store, authentication, authorization))
 }
 
-// ReadAuthorizationConfig read authorization configuration file
-func ReadAuthorizationConfig() (service.Authorizator, error) {
-	perms := make(map[string][]string)
-
+// newAuthorizator read authorization configuration file
+func newAuthorizator() (service.Authorizator, error) {
 	file, err := os.Open("permissions.json")
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	if err := json.NewDecoder(file).Decode(&perms); err != nil {
-		return nil, err
-	}
-
-	return service.NewAuthorizator(perms), nil
+	return service.NewAuthorizatorFromFile(file)
 }
 
 // Route
@@ -99,7 +92,7 @@ func Route(store store.Store,
 	api.GET("/thread/:id", HasAuthorization(authorization, "post.read"), getThread)
 
 	// post creation
-	api.POST("/post", post(authorization))
+	api.POST("/post", HasAuthorization(authorization, "posting.post"), post(authorization))
 
 	return r
 }

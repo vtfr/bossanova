@@ -1,45 +1,53 @@
 {
-	"admin": [
-		"boards.read",
-		"boards.read-hidden",
-		"boards.create",
-		"boards.update",
-		"boards.delete",
-		"boards.list",
-		"users.read",
-		"users.create",
-		"users.update",
-		"users.delete",
-		"users.list",
-		"bans.read",
-		"bans.create",
-		"bans.update",
-		"bans.delete",
-		"bans.list",
-		"threads.read",
-		"threads.create",
-		"threads.update",
-		"threads.delete",
-		"threads.list",
-		"threads.lock",
-		"threads.sticky",
-		"post.read"
-	],
-	"mod": [
-		"boards.view",
-		"boards.post",
-		"boards.view-hidden",
-		"posters.ban",
-		"posters.warn",
-		"posters.view-ip-partial",
-		"post.delete",
-		"post.read"
-	],
-	"anonymous": [
-		"boards.read",
-		"boards.list",
-		"threads.read",
-		"threads.list",
-		"post.read"
-	]
+	"roles": {
+		"admin": [
+			"boards.read",
+			"boards.read-hidden",
+			"boards.create",
+			"boards.update",
+			"boards.delete",
+			"boards.list",
+			"users.read",
+			"users.create",
+			"users.update",
+			"users.delete",
+			"users.list",
+			"bans.read",
+			"bans.create",
+			"bans.update",
+			"bans.delete",
+			"bans.list",
+			"threads.read",
+			"threads.create",
+			"threads.update",
+			"threads.delete",
+			"threads.list",
+			"threads.lock",
+			"threads.sticky",
+			"post.read"
+			"posting.ignore-ban"
+			"posting.ignore-locked"
+		],
+		"mod": [
+			"boards.view",
+			"boards.post",
+			"boards.view-hidden",
+			"posters.ban",
+			"posters.warn",
+			"posters.view-ip-partial",
+			"post.delete",
+			"post.read"
+		],
+		"anonymous": [
+			"boards.read",
+			"boards.list",
+			"threads.read",
+			"threads.list",
+			"post.read"
+		]
+	},
+	"inheritance": {
+		"admin": [ "mod" ],
+		"mod": [ "anonymous" ]
+	}
 }

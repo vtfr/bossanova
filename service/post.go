@@ -71,7 +71,7 @@ func CreatePost(auth Authorizator,
 	}
 
 	// if banned and can't ignore ban, then return error
-	if banned && !auth.IsAuthorized(user, "ban.ignore") {
+	if banned && !auth.IsAuthorized(user, "posting.ignore-ban") {
 		return nil, ErrBanned
 	}
 
@@ -99,7 +99,7 @@ func CreatePost(auth Authorizator,
 		}
 
 		// verify if thread locked and can bypass that lock
-		if thread.Locked && !auth.IsAuthorized(user, "post.ingnore-locked") {
+		if thread.Locked && !auth.IsAuthorized(user, "posting.ingnore-locked") {
 			return nil, ErrThreadLocked
 		}
 	}
