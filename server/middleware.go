@@ -16,6 +16,7 @@ const (
 	usernameKey = "username"
 	userKey     = "user"
 	expiresKey  = "expires"
+	tokenKey    = "token"
 )
 
 // ErrorMiddleware handles error processing
@@ -61,10 +62,30 @@ func GetStore(c *gin.Context) store.Store {
 // AuthenticationMiddleware authenticates an user and sets it's context value
 func AuthenticationMiddleware(auth service.Authenticator) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if user, err := auth.GetUserFromRequest(c.Request); err == nil {
-			c.Set(userKey, user)
+		// attempts to extract token
+		token, err := service.ExtractToken(c.Request)
+		if err != nil {
+			// if no token found, then just continue the request like nothing
+			// happened
+			if err == service.ErrNoToken {
+				c.Next()
+				return
+			}
+
+			// register token error
+			c.Error(err)
+			return
 		}
 
+		// attempts to parse user
+		user, err := auth.AuthenticateToken(token)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		c.Set(tokenKey, token)
+		c.Set(userKey, user)
 		c.Next()
 	}
 }

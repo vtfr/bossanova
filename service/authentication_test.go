@@ -2,7 +2,6 @@ package service_test
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -13,10 +12,45 @@ import (
 	"github.com/vtfr/bossanova/service"
 )
 
-func createRequestWithToken(token string) *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, "/", nil)
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
-	return req
+func TestExtractToken(t *testing.T) {
+	g := goblin.Goblin(t)
+	g.Describe("ExtractToken", func() {
+		g.It("Should extract a valid token from request and return it", func() {
+			req, err := http.NewRequest(http.MethodGet, "/", nil)
+			if err != nil {
+				t.Fail()
+			}
+
+			// adds authorization header
+			req.Header.Set("Authorization", "Bearer token")
+
+			value, err := service.ExtractToken(req)
+			g.Assert(err).Equal(nil)
+			g.Assert(value).Equal("token")
+		})
+		g.It("Should return error if no token", func() {
+			req, err := http.NewRequest(http.MethodGet, "/", nil)
+			if err != nil {
+				t.Fail()
+			}
+
+			_, err = service.ExtractToken(req)
+			g.Assert(err != nil).IsTrue()
+		})
+		g.It("Should return error if invalid token prefix", func() {
+			req, err := http.NewRequest(http.MethodGet, "/", nil)
+			if err != nil {
+				t.Fail()
+			}
+
+			// adds authorization header
+			req.Header.Set("Authorization", "token")
+
+			_, err = service.ExtractToken(req)
+			g.Assert(err != nil).IsTrue()
+		})
+	})
+
 }
 
 func TestAuthenticator(t *testing.T) {
@@ -42,7 +76,7 @@ func TestAuthenticator(t *testing.T) {
 			g.Assert(err == nil).IsTrue("failed generating token")
 		})
 		g.It("Should fail to parse invalid tokens", func() {
-			user, err := auth.GetUserFromRequest(createRequestWithToken("invalid"))
+			user, err := auth.AuthenticateToken("invalid")
 			g.Assert(user == nil).IsTrue()
 			g.Assert(err != nil).IsTrue()
 		})
@@ -51,7 +85,7 @@ func TestAuthenticator(t *testing.T) {
 				Return(sample, nil).
 				Times(1)
 
-			user, err := auth.GetUserFromRequest(createRequestWithToken(token))
+			user, err := auth.AuthenticateToken(token)
 			g.Assert(err == nil).IsTrue("failed getting/parsing user")
 
 			// verify same users
@@ -63,7 +97,7 @@ func TestAuthenticator(t *testing.T) {
 				Times(1)
 
 			// parse request
-			user, err := auth.GetUserFromRequest(createRequestWithToken(token))
+			user, err := auth.AuthenticateToken(token)
 			g.Assert(err != nil).IsTrue()
 			g.Assert(user == nil).IsTrue()
 		})
