@@ -9,9 +9,6 @@ import (
 	"github.com/vtfr/bossanova/model"
 )
 
-// ErrNoToken is returned when no token has been found
-var ErrNoToken = errors.New("no token")
-
 // Authenticator handles all authentication roles
 //go:generate mockgen -destination=../mocks/authentication_servcice.go -package=mocks github.com/vtfr/bossanova/service Authenticator
 type Authenticator interface {
