@@ -70,8 +70,6 @@ func (auth *authenticator) CreateToken(user *model.User) (string, error) {
 // ExtractToken extracts a token from it's bearer prefix and returns it's raw
 // value. Returns an error if no valid token is found
 func ExtractToken(headerValue string) (string, error) {
-	const bearer = "bearer"
-
 	parts := strings.SplitN(headerValue, " ", 2)
 	if strings.ToLower(parts[0]) == "bearer" && len(parts[1]) != 0 {
 		return parts[1], nil
