@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"net/http"
 	"strings"
 	"time"
 
@@ -23,9 +22,9 @@ type Authenticator interface {
 	CreateToken(user *model.User) (string, error)
 }
 
-// authenticationService is the default implementation for Authenticator
+// authenticator is the default implementation for Authenticator
 // using JWT
-type authenticationService struct {
+type authenticator struct {
 	users  UserGetter
 	secret []byte
 }
@@ -38,14 +37,14 @@ type UserGetter interface {
 // NewAuthenticator creates a new Authenticator using the
 // default implementation.
 func NewAuthenticator(users UserGetter, secret []byte) Authenticator {
-	return &authenticationService{
+	return &authenticator{
 		users:  users,
 		secret: secret,
 	}
 }
 
 // GetUserFromRequest gets an user from a request's Authorization token
-func (auth *authenticationService) AuthenticateToken(tokenString string) (*model.User, error) {
+func (auth *authenticator) AuthenticateToken(tokenString string) (*model.User, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{},
 		func(token *jwt.Token) (interface{}, error) {
 			return auth.secret, nil
@@ -59,7 +58,7 @@ func (auth *authenticationService) AuthenticateToken(tokenString string) (*model
 }
 
 // CreateToken creates a new JWT token
-func (auth *authenticationService) CreateToken(user *model.User) (string, error) {
+func (auth *authenticator) CreateToken(user *model.User) (string, error) {
 	now := time.Now()
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
 		ExpiresAt: now.AddDate(0, 1, 0).Unix(),
@@ -68,20 +67,14 @@ func (auth *authenticationService) CreateToken(user *model.User) (string, error)
 	}).SignedString(auth.secret)
 }
 
-// ExtractToken extracts a token from it's Authorization headers. Returns an
-// error if no token is found
-func ExtractToken(req *http.Request) (string, error) {
-	const authKey = "Authorization"
-	const bearerPrefix = "bearer "
+// ExtractToken extracts a token from it's bearer prefix and returns it's raw
+// value. Returns an error if no valid token is found
+func ExtractToken(headerValue string) (string, error) {
+	const bearer = "bearer"
 
-	value := req.Header.Get("Authorization")
-	if value == "" {
-		return "", ErrNoToken
-	}
-
-	// Searches for bearer in the beginning of the string. If found, remove it
-	if strings.HasPrefix(strings.ToLower(value), bearerPrefix) {
-		return value[len(bearerPrefix):], nil
+	parts := strings.SplitN(headerValue, " ", 2)
+	if strings.ToLower(parts[0]) == "bearer" && len(parts[1]) != 0 {
+		return parts[1], nil
 	}
 
 	return "", errors.New("invalid bearer prefix")

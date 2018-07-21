@@ -2,7 +2,6 @@ package service_test
 
 import (
 	"errors"
-	"net/http"
 	"testing"
 
 	"github.com/franela/goblin"
@@ -16,37 +15,13 @@ func TestExtractToken(t *testing.T) {
 	g := goblin.Goblin(t)
 	g.Describe("ExtractToken", func() {
 		g.It("Should extract a valid token from request and return it", func() {
-			req, err := http.NewRequest(http.MethodGet, "/", nil)
-			if err != nil {
-				t.Fail()
-			}
-
-			// adds authorization header
-			req.Header.Set("Authorization", "Bearer token")
-
-			value, err := service.ExtractToken(req)
-			g.Assert(err).Equal(nil)
+			value, err := service.ExtractToken("Bearer token")
 			g.Assert(value).Equal("token")
-		})
-		g.It("Should return error if no token", func() {
-			req, err := http.NewRequest(http.MethodGet, "/", nil)
-			if err != nil {
-				t.Fail()
-			}
-
-			_, err = service.ExtractToken(req)
-			g.Assert(err != nil).IsTrue()
+			g.Assert(err).Equal(nil)
 		})
 		g.It("Should return error if invalid token prefix", func() {
-			req, err := http.NewRequest(http.MethodGet, "/", nil)
-			if err != nil {
-				t.Fail()
-			}
-
-			// adds authorization header
-			req.Header.Set("Authorization", "token")
-
-			_, err = service.ExtractToken(req)
+			value, err := service.ExtractToken("invalid token")
+			g.Assert(value).Equal("")
 			g.Assert(err != nil).IsTrue()
 		})
 	})

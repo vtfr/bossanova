@@ -62,30 +62,26 @@ func GetStore(c *gin.Context) store.Store {
 // AuthenticationMiddleware authenticates an user and sets it's context value
 func AuthenticationMiddleware(auth service.Authenticator) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// attempts to extract token
-		token, err := service.ExtractToken(c.Request)
-		if err != nil {
-			// if no token found, then just continue the request like nothing
-			// happened
-			if err == service.ErrNoToken {
-				c.Next()
+		// if no token is found, simply ignore
+		if headerValue := c.GetHeader("Authentication"); headerValue != "" {
+			token, err := service.ExtractToken(headerValue)
+			if err != nil {
+				c.Error(err)
 				return
 			}
 
-			// register token error
-			c.Error(err)
-			return
+			// attempts to parse user
+			user, err := auth.AuthenticateToken(token)
+			if err != nil {
+				c.Error(err)
+				return
+			}
+
+			// stores token and user
+			c.Set(tokenKey, token)
+			c.Set(userKey, user)
 		}
 
-		// attempts to parse user
-		user, err := auth.AuthenticateToken(token)
-		if err != nil {
-			c.Error(err)
-			return
-		}
-
-		c.Set(tokenKey, token)
-		c.Set(userKey, user)
 		c.Next()
 	}
 }
