@@ -29,13 +29,23 @@ const samplePermissionData = `{
 }`
 
 func TestAuthorizator(t *testing.T) {
-	r := strings.NewReader(samplePermissionData)
-
 	var auth service.Authorizator
 
 	g := goblin.Goblin(t)
 	g.Describe("Authorizator", func() {
+		g.It("Should warn on malformed configuration file", func() {
+			r := strings.NewReader(`{
+				"roles": {
+					"roleA": true,
+				}
+			}`)
+
+			_, err := service.NewAuthorizatorFromFile(r)
+			g.Assert(err != nil).IsTrue()
+		})
 		g.It("Should read from the configuration file", func() {
+			r := strings.NewReader(samplePermissionData)
+
 			var err error
 			auth, err = service.NewAuthorizatorFromFile(r)
 			g.Assert(err == nil).IsTrue()
