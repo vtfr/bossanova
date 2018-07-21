@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/franela/goblin"
-	"github.com/google/go-cmp/cmp"
 	"github.com/vtfr/bossanova/model"
 	"github.com/vtfr/bossanova/service"
 )
@@ -18,10 +17,6 @@ func TestAuthorizator(t *testing.T) {
 
 	g := goblin.Goblin(t)
 	g.Describe("Authorizator", func() {
-		g.It("Should return valid roles", func() {
-			roles := []string{"admin", "mod", "anonymous"}
-			g.Assert(cmp.Equal(auth.Roles(), roles)).IsTrue()
-		})
 		g.It("Should authorize correctly", func() {
 			admin := &model.User{Role: "admin"}
 			mod := &model.User{Role: "mod"}
