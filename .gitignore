@@ -7,3 +7,7 @@ bossanova
 
 # Test binary, build with `go test -c`
 *.test
+
+# Ignore coverage
+profile.out
+coverage.txt
