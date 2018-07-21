@@ -7,7 +7,7 @@
 			"users.delete",
 			"threads.lock",
 			"threads.sticky",
-			"posting.ignore-ban"
+			"posting.ignore-ban",
 			"posting.ignore-locked"
 		],
 		"mod": [
@@ -16,7 +16,7 @@
 			"post.delete"
 		],
 		"default": [
-			"posting.post"
+			"posting.post",
 			"boards.read",
 			"post.read"
 		]
