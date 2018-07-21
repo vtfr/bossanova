@@ -7,7 +7,6 @@ package mocks
 import (
 	gomock "github.com/golang/mock/gomock"
 	model "github.com/vtfr/bossanova/model"
-	http "net/http"
 	reflect "reflect"
 )
 
@@ -34,6 +33,19 @@ func (m *MockAuthenticator) EXPECT() *MockAuthenticatorMockRecorder {
 	return m.recorder
 }
 
+// AuthenticateToken mocks base method
+func (m *MockAuthenticator) AuthenticateToken(arg0 string) (*model.User, error) {
+	ret := m.ctrl.Call(m, "AuthenticateToken", arg0)
+	ret0, _ := ret[0].(*model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AuthenticateToken indicates an expected call of AuthenticateToken
+func (mr *MockAuthenticatorMockRecorder) AuthenticateToken(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthenticateToken", reflect.TypeOf((*MockAuthenticator)(nil).AuthenticateToken), arg0)
+}
+
 // CreateToken mocks base method
 func (m *MockAuthenticator) CreateToken(arg0 *model.User) (string, error) {
 	ret := m.ctrl.Call(m, "CreateToken", arg0)
@@ -45,17 +57,4 @@ func (m *MockAuthenticator) CreateToken(arg0 *model.User) (string, error) {
 // CreateToken indicates an expected call of CreateToken
 func (mr *MockAuthenticatorMockRecorder) CreateToken(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateToken", reflect.TypeOf((*MockAuthenticator)(nil).CreateToken), arg0)
-}
-
-// GetUserFromRequest mocks base method
-func (m *MockAuthenticator) GetUserFromRequest(arg0 *http.Request) (*model.User, error) {
-	ret := m.ctrl.Call(m, "GetUserFromRequest", arg0)
-	ret0, _ := ret[0].(*model.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetUserFromRequest indicates an expected call of GetUserFromRequest
-func (mr *MockAuthenticatorMockRecorder) GetUserFromRequest(arg0 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserFromRequest", reflect.TypeOf((*MockAuthenticator)(nil).GetUserFromRequest), arg0)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 // Authenticator handles all authentication roles
-//go:generate mockgen -destination=../mocks/authentication_servcice.go -package=mocks github.com/vtfr/bossanova/service Authenticator
+//go:generate mockgen -destination=../mocks/authentication_service.go -package=mocks github.com/vtfr/bossanova/service Authenticator
 type Authenticator interface {
 	// AuthenticateToken authenticates a token and returns it's user
 	AuthenticateToken(tokenString string) (*model.User, error)
