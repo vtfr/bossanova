@@ -4,10 +4,8 @@ go:
   - "1.10"
   - "1.9.x"
 
-before_install:
-  - go test -v ./...
-
 script:
+  - go test -v ./...
   - ./coverage.sh
 
 after_success:
