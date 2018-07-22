@@ -22,7 +22,7 @@ type updateUserRequest struct {
 func getUsers(c *gin.Context) {
 	users, err := GetStore(c).AllUsers()
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.Error(err)
 		return
 	}
 
@@ -34,7 +34,7 @@ func getUsers(c *gin.Context) {
 func getUser(c *gin.Context) {
 	user, err := GetStore(c).GetUser(c.Param("username"))
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.Error(err)
 		return
 	}
 
@@ -47,7 +47,7 @@ func createUser(c *gin.Context) {
 	var data createUserRequest
 
 	if err := c.BindJSON(&data); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Status(http.StatusBadRequest)
 		return
 	}
 
@@ -58,12 +58,12 @@ func createUser(c *gin.Context) {
 	}
 
 	if err := model.Validate(user); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
 	if err := GetStore(c).CreateUser(user); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.Error(err)
 		return
 	}
 
@@ -75,7 +75,7 @@ func updateUser(c *gin.Context) {
 
 	// Bind request data to object
 	if err := c.BindJSON(&data); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
@@ -89,12 +89,12 @@ func updateUser(c *gin.Context) {
 	}
 
 	if err := model.Validate(user); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
 	if err := GetStore(c).UpdateUser(user); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.Error(err)
 		return
 	}
 
@@ -103,7 +103,7 @@ func updateUser(c *gin.Context) {
 
 func deleteUser(c *gin.Context) {
 	if err := GetStore(c).DeleteUser(c.Param("username")); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.Error(err)
 		return
 	}
 

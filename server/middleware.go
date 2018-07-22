@@ -27,16 +27,13 @@ func ErrorMiddleware() gin.HandlerFunc {
 		// If errors
 		if len(c.Errors) != 0 {
 			err := c.Errors.Last().Err
-			var detailed *common.DetailedError
-			if er, ok := err.(*common.DetailedError); ok {
-				detailed = er
-			} else {
-				detailed = common.NewDetailedError("internal-server-error",
-					err.Error(), http.StatusInternalServerError)
+			apiError := common.ErrInternalServerError
+			if er, ok := err.(*common.ApiError); ok {
+				apiError = er
 			}
 
-			c.JSON(detailed.Status, gin.H{
-				"error": detailed,
+			c.JSON(apiError.Code(), gin.H{
+				"error": apiError,
 			})
 		}
 	}
@@ -63,7 +60,7 @@ func GetStore(c *gin.Context) store.Store {
 func AuthenticationMiddleware(auth service.Authenticator) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// if no token is found, simply ignore
-		if headerValue := c.GetHeader("Authentication"); headerValue != "" {
+		if headerValue := c.GetHeader("Authorization"); headerValue != "" {
 			token, err := service.ExtractToken(headerValue)
 			if err != nil {
 				c.Error(err)

@@ -16,13 +16,13 @@ func login(auth service.Authenticator) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var login loginRequest
 		if err := c.BindJSON(&login); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			c.Status(http.StatusBadRequest)
 			return
 		}
 
 		user, err := GetStore(c).GetUser(login.Username)
 		if err != nil {
-			c.AbortWithError(http.StatusForbidden, err)
+			c.Status(http.StatusForbidden)
 			return
 		}
 

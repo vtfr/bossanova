@@ -10,7 +10,7 @@ import (
 func getPost(c *gin.Context) {
 	post, err := GetStore(c).GetPost(c.Param("id"))
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.Error(err)
 		return
 	}
 
@@ -22,13 +22,13 @@ func getPost(c *gin.Context) {
 func updatePost(c *gin.Context) {
 	var post model.Post
 	if err := c.BindJSON(&post); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Status(http.StatusBadRequest)
 		return
 	}
 
 	post.ID = c.Param("id")
 	if err := GetStore(c).UpdatePost(&post); err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.Error(err)
 		return
 	}
 
@@ -37,7 +37,7 @@ func updatePost(c *gin.Context) {
 
 func deletePost(c *gin.Context) {
 	if err := GetStore(c).DeletePost(c.Param("id")); err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.Error(err)
 		return
 	}
 
@@ -47,7 +47,7 @@ func deletePost(c *gin.Context) {
 func getThread(c *gin.Context) {
 	thread, err := GetStore(c).GetThread(c.Param("id"))
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.Error(err)
 		return
 	}
 

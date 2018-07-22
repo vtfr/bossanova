@@ -60,9 +60,9 @@ func Route(store store.Store,
 	authorization service.Authorizator) http.Handler {
 	r := gin.Default()
 
+	r.Use(ErrorMiddleware())
 	r.Use(StoreMiddleware(store))
 	r.Use(AuthenticationMiddleware(authentication))
-	r.Use(ErrorMiddleware())
 
 	api := r.Group("/api")
 

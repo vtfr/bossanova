@@ -6,6 +6,7 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/sirupsen/logrus"
+	"github.com/vtfr/bossanova/common"
 	"github.com/vtfr/bossanova/model"
 )
 
@@ -201,9 +202,9 @@ func mgoErr(err error) error {
 	case err == nil:
 		return nil
 	case err == mgo.ErrNotFound:
-		return ErrNotFound
+		return common.ErrNotFound
 	case mgo.IsDup(err):
-		return ErrDuplicate
+		return common.ErrConflict
 	default:
 		logrus.Panicln("Unknown error in MongoDB:", err)
 		return nil

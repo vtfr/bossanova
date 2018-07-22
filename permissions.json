@@ -18,7 +18,9 @@
 		"default": [
 			"posting.post",
 			"boards.read",
-			"post.read"
+			"post.read",
+
+			"users.create"
 		]
 	},
 	"inheritance": {

@@ -1,8 +1,10 @@
 package model
 
 import (
+	"net/http"
 	"regexp"
 
+	"github.com/vtfr/bossanova/common"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -19,5 +21,9 @@ func init() {
 
 // Validate validates a struct based on a validator tags
 func Validate(v interface{}) error {
-	return validate.Struct(v)
+	err := validate.Struct(v)
+	if err != nil {
+		return &common.ApiError{http.StatusBadRequest, err.Error()}
+	}
+	return nil
 }

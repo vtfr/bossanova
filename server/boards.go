@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vtfr/bossanova/common"
 	"github.com/vtfr/bossanova/model"
 )
 
 func getBoards(c *gin.Context) {
 	boards, err := GetStore(c).AllBoards()
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.Error(err)
 		return
 	}
 
@@ -34,17 +35,17 @@ func getBoard(c *gin.Context) {
 func createBoard(c *gin.Context) {
 	var board *model.Board
 	if err := c.BindJSON(&board); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(common.ErrBadRequest)
 		return
 	}
 
 	if err := model.Validate(board); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
 	if err := GetStore(c).CreateBoard(board); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.Error(err)
 		return
 	}
 
@@ -54,7 +55,7 @@ func createBoard(c *gin.Context) {
 func updateBoard(c *gin.Context) {
 	var board *model.Board
 	if err := c.BindJSON(&board); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(common.ErrBadRequest)
 		return
 	}
 
@@ -66,7 +67,7 @@ func updateBoard(c *gin.Context) {
 	}
 
 	if err := GetStore(c).UpdateBoard(board); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.Error(err)
 		return
 	}
 
@@ -75,7 +76,7 @@ func updateBoard(c *gin.Context) {
 
 func deleteBoard(c *gin.Context) {
 	if err := GetStore(c).DeleteBoard(c.Param("uri")); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.Error(err)
 		return
 	}
 

@@ -1,10 +1,9 @@
 package service
 
 import (
+	"errors"
 	"io"
-	"net/http"
 
-	"github.com/vtfr/bossanova/common"
 	"github.com/vtfr/bossanova/model"
 	"github.com/vtfr/bossanova/store"
 )
@@ -19,10 +18,10 @@ func (p *PostingError) Error() string {
 }
 
 var (
-	ErrBanned         = common.NewDetailedError("banned", "you are banned", http.StatusForbidden)
-	ErrThreadNotFound = common.NewDetailedError("not-found", "thread not found", http.StatusNotFound)
-	ErrBoardNotFound  = common.NewDetailedError("not-found", "board not found", http.StatusNotFound)
-	ErrThreadLocked   = common.NewDetailedError("locked", "thread locked", http.StatusForbidden)
+	ErrBanned         = errors.New("banned")
+	ErrThreadNotFound = errors.New("not-found")
+	ErrBoardNotFound  = errors.New("not-found")
+	ErrThreadLocked   = errors.New("locked")
 )
 
 // CreatePostRequest constains all post creation information necessary for the
@@ -66,7 +65,7 @@ func CreatePost(auth Authorizator,
 
 	// verifies if user is banned
 	_, banned, err := s.IsBanned(data.IP)
-	if err != nil && err != store.ErrNotFound {
+	if err != nil {
 		return nil, err
 	}
 
