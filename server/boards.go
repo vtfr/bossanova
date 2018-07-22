@@ -23,7 +23,7 @@ func getBoards(c *gin.Context) {
 func getBoard(c *gin.Context) {
 	board, err := GetStore(c).GetBoard(c.Param("uri"))
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.Error(err)
 		return
 	}
 
@@ -62,7 +62,7 @@ func updateBoard(c *gin.Context) {
 	board.URI = c.Param("uri")
 
 	if err := model.Validate(board); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.Error(err)
 		return
 	}
 
