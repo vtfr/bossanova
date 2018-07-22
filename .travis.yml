@@ -6,7 +6,7 @@ go:
 
 script:
   - go test -v ./...
-  - ./coverage.sh
 
 after_success:
+  - ./coverage.sh
   - bash <(curl -s https://codecov.io/bash)
