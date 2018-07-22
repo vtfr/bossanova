@@ -6,10 +6,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/sirupsen/logrus"
 	"github.com/vtfr/bossanova/service"
 	"github.com/vtfr/bossanova/store"
 )
 
+// Start creates a new Bossanova server with the configuration retrieved from
+// environment variable and runs it
 func Start() error {
 	var config struct {
 		Address      string `default:":8080"`
@@ -18,26 +21,35 @@ func Start() error {
 	}
 
 	// read configuration
+	logrus.Infoln("Reading environment variable configuration")
 	if err := envconfig.Process("bossanova", &config); err != nil {
 		return err
 	}
 
 	// connect to store
+	logrus.Infoln("Attempting to connect to MongoDB store")
 	store, err := store.NewMongoStore(config.MongoAddress)
 	if err != nil {
 		return err
 	}
 	defer store.Close()
 
+	logrus.Infoln("Creating Authentication service")
 	authentication := service.NewAuthenticator(store, []byte("test"))
 
+	logrus.Infoln("Creating Authorization service")
 	authorization, err := newAuthorizator()
 	if err != nil {
 		return err
 	}
 
+	// routing
+	logrus.Infoln("Configuring routing")
+	handler := Route(store, authentication, authorization)
+
 	// starts the server
-	return http.ListenAndServe(config.Address, Route(store, authentication, authorization))
+	logrus.Infoln("Starting server at", config.Address)
+	return http.ListenAndServe(config.Address, handler)
 }
 
 // newAuthorizator read authorization configuration file
@@ -51,7 +63,7 @@ func newAuthorizator() (service.Authorizator, error) {
 	return service.NewAuthorizatorFromFile(file)
 }
 
-// Route
+// Route configures all necessary middlewares and routes needed
 func Route(store store.Store,
 	authentication service.Authenticator,
 	authorization service.Authorizator) http.Handler {
