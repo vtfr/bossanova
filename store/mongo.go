@@ -26,15 +26,8 @@ type MongoStore struct {
 var _ Store = &MongoStore{}
 
 // NewMongoStore creates a new MongoStore
-func NewMongoStore(addrs []string, username, password string) (Store, error) {
-	logrus.Infoln("Creating new MongoDB connection to addresses", addrs)
-
-	ses, err := mgo.DialWithInfo(&mgo.DialInfo{
-		Addrs:    addrs,
-		Timeout:  10 * time.Second,
-		Username: username,
-		Password: password,
-	})
+func NewMongoStore(uri string) (Store, error) {
+	ses, err := mgo.Dial(uri)
 	if err != nil {
 		return nil, err
 	}

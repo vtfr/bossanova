@@ -12,11 +12,9 @@ import (
 
 func Start() error {
 	var config struct {
-		Address       string   `default:":8080"`
-		MongoAddrs    []string `default:":27017"`
-		MongoUsername string
-		MongoPassword string
-		Production    bool `default:"false"`
+		Address      string `default:":8080"`
+		MongoAddress string `default:"mongodb://localhost:27017"`
+		Production   bool   `default:"false"`
 	}
 
 	// read configuration
@@ -25,8 +23,7 @@ func Start() error {
 	}
 
 	// connect to store
-	store, err := store.NewMongoStore(config.MongoAddrs, config.MongoUsername,
-		config.MongoPassword)
+	store, err := store.NewMongoStore(config.MongoAddress)
 	if err != nil {
 		return err
 	}
