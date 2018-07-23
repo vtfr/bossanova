@@ -40,14 +40,14 @@ var _ = Describe("Authorization", func() {
 		}`)
 
 		_, err := service.NewAuthorizatorFromFile(r)
-		Expect(err).NotTo(BeNil())
+		Expect(err).To(HaveOccurred())
 	})
 	It("should read from the configuration file", func() {
 		r := strings.NewReader(samplePermissionData)
 
 		var err error
 		auth, err = service.NewAuthorizatorFromFile(r)
-		Expect(err).To(BeNil())
+		Expect(err).ToNot(HaveOccurred())
 	})
 	It("should authorize correctly", func() {
 		userA := &model.User{Role: "roleA"}

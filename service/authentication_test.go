@@ -16,19 +16,13 @@ var _ = Describe("ExtractToken", func() {
 	It("should extract a valid token from request and return it", func() {
 		value, err := service.ExtractToken("Bearer token")
 		Expect(value).To(Equal("token"))
-		Expect(err).To(BeNil())
+		Expect(err).ToNot(HaveOccurred())
 	})
 	It("should return error if invalid token prefix", func() {
 		value, err := service.ExtractToken("invalid token")
 		Expect(value).To(Equal(""))
-		Expect(err).NotTo(BeNil())
+		Expect(err).To(HaveOccurred())
 	})
-})
-
-var ()
-
-var _ = Describe("Service", func() {
-
 })
 
 var _ = Describe("Authentication", func() {
@@ -50,11 +44,11 @@ var _ = Describe("Authentication", func() {
 	It("should generate valid tokens", func() {
 		var err error
 		token, err = auth.CreateToken(sample)
-		Expect(err).To(BeNil())
+		Expect(err).ToNot(HaveOccurred())
 	})
 	It("should fail to parse invalid tokens", func() {
 		_, err := auth.AuthenticateToken("invalid")
-		Expect(err).NotTo(BeNil())
+		Expect(err).To(HaveOccurred())
 	})
 	It("should be able to parse valid tokens if user exists", func() {
 		mockStore.EXPECT().GetUser(sample.Username).
@@ -62,7 +56,7 @@ var _ = Describe("Authentication", func() {
 			Times(1)
 
 		user, err := auth.AuthenticateToken(token)
-		Expect(err).To(BeNil())
+		Expect(err).ToNot(HaveOccurred())
 		Expect(user).To(Equal(sample))
 	})
 	It("should return error if no users exists", func() {
@@ -71,6 +65,6 @@ var _ = Describe("Authentication", func() {
 			Times(1)
 
 		_, err := auth.AuthenticateToken(token)
-		Expect(err).NotTo(BeNil())
+		Expect(err).To(HaveOccurred())
 	})
 })
