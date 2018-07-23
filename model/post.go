@@ -54,8 +54,8 @@ func NewPost(parent, board, name, subject, comment, ip string) *Post {
 }
 
 // Valid returns an error if the post is invalid
-func (post *Post) Valid() error {
-	return Validate(post)
+func (p *Post) Valid() error {
+	return Validate(p)
 }
 
 // AddMedia adds a new media

@@ -26,8 +26,8 @@ func NewUser(username, password, role string) *User {
 }
 
 // Valid returns an error if the user is invalid
-func (user *User) Valid() error {
-	return Validate(user)
+func (u *User) Valid() error {
+	return Validate(u)
 }
 
 // HashPassword hashes a password using bcrypt with default cost.
