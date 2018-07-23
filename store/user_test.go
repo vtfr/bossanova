@@ -17,7 +17,7 @@ var _ = Describe("User", func() {
 
 		err := st.CreateUser(sample)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 	})
 	It("should fail to insert a duplicated resource", func() {
 		SkipIfShort()
@@ -31,7 +31,7 @@ var _ = Describe("User", func() {
 
 		users, err := st.AllUsers()
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 		Expect(users).To(HaveLen(1))
 		Expect(users).To(ContainElement(sample))
 	})
@@ -40,7 +40,7 @@ var _ = Describe("User", func() {
 
 		user, err := st.GetUser(sample.Username)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 		Expect(user).To(Equal(sample))
 	})
 	It("should be able to update a resource", func() {
@@ -50,11 +50,11 @@ var _ = Describe("User", func() {
 		sample.Role = "mod"
 		err := st.UpdateUser(sample)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 
 		By("checking if it was updated")
 		user, err := st.GetUser(sample.Username)
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 		Expect(user).To(Equal(sample))
 	})
 	It("should delete a resource", func() {
@@ -63,7 +63,7 @@ var _ = Describe("User", func() {
 		By("deleting the resource")
 		err := st.DeleteUser(sample.Username)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 
 		By("failling to fetch it")
 		_, err = st.GetUser(sample.Username)

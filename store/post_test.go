@@ -17,7 +17,7 @@ var _ = Describe("Post", func() {
 
 		err := st.CreatePost(sample)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 	})
 	It("should fail to insert a duplicated post", func() {
 		SkipIfShort()
@@ -31,7 +31,7 @@ var _ = Describe("Post", func() {
 
 		post, err := st.GetPost(sample.ID)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 		Expect(post).To(Equal(sample))
 	})
 	It("should be able to update a resource", func() {
@@ -41,11 +41,11 @@ var _ = Describe("Post", func() {
 		sample.Comment = "changed comment"
 		err := st.UpdatePost(sample)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 
 		By("checking if it was updated")
 		post, err := st.GetPost(sample.ID)
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 		Expect(post).To(Equal(sample))
 	})
 	It("should delete a resource", func() {
@@ -54,7 +54,7 @@ var _ = Describe("Post", func() {
 		By("deleting the resource")
 		err := st.DeletePost(sample.ID)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 
 		By("failling to fetch it")
 		_, err = st.GetPost(sample.ID)

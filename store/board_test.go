@@ -16,7 +16,7 @@ var _ = Describe("Board", func() {
 
 		err := st.CreateBoard(sample)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 	})
 	It("should fail to insert a duplicated board", func() {
 		SkipIfShort()
@@ -30,7 +30,7 @@ var _ = Describe("Board", func() {
 
 		boards, err := st.AllBoards()
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 		Expect(boards).To(HaveLen(1))
 		Expect(boards).To(ContainElement(sample))
 	})
@@ -39,7 +39,7 @@ var _ = Describe("Board", func() {
 
 		board, err := st.GetBoard(sample.URI)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 		Expect(board).To(Equal(sample))
 	})
 	It("should be able to update a resource", func() {
@@ -49,11 +49,11 @@ var _ = Describe("Board", func() {
 		sample.Description = "changed description"
 		err := st.UpdateBoard(sample)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 
 		By("checking if it was updated")
 		board, err := st.GetBoard(sample.URI)
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 		Expect(board).To(Equal(sample))
 	})
 	It("should delete a resource", func() {
@@ -62,7 +62,7 @@ var _ = Describe("Board", func() {
 		By("deleting the resource")
 		err := st.DeleteBoard(sample.URI)
 
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 
 		By("failling to fetch it")
 		_, err = st.GetBoard(sample.URI)
