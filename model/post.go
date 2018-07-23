@@ -30,7 +30,7 @@ type Post struct {
 
 // NewPost creates a new post
 func NewPost(parent, board, name, subject, comment, ip string) *Post {
-	now := time.Now()
+	now := time.Now().UTC().Truncate(time.Second)
 	id := GeneratePostID(now, comment, subject)
 
 	post := &Post{

@@ -12,3 +12,13 @@ type Board struct {
 	CreatedAt   time.Time `json:"createdAt" bson:"createdAt"`
 	Hidden      bool      `json:"hidden,omitempty" bson:"hidden"`
 }
+
+// NewBoard creates a new board
+func NewBoard(uri, name, description string) *Board {
+	return &Board{
+		URI:         uri,
+		Name:        name,
+		Description: description,
+		CreatedAt:   time.Now().UTC().Truncate(time.Second),
+	}
+}

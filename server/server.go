@@ -28,7 +28,7 @@ func Start() error {
 
 	// connect to store
 	logrus.Infoln("Attempting to connect to MongoDB store")
-	store, err := store.NewMongoStore(config.MongoAddress)
+	store, err := store.NewStore(config.MongoAddress, "bossanova")
 	if err != nil {
 		return err
 	}

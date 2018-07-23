@@ -15,6 +15,16 @@ type User struct {
 	LastModifiedAt time.Time `json:"modifiedAt" bson:"modifiedAt"`
 }
 
+// NewUser creates a new user
+func NewUser(username, password, role string) *User {
+	return &User{
+		Username:       username,
+		Role:           role,
+		HashedPassword: HashPassword(password),
+		CreatedAt:      time.Now().UTC().Truncate(time.Second),
+	}
+}
+
 // HashPassword hashes a password using bcrypt with default cost.
 func HashPassword(password string) []byte {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
