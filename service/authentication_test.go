@@ -2,79 +2,75 @@ package service_test
 
 import (
 	"errors"
-	"testing"
 
-	"github.com/franela/goblin"
 	"github.com/golang/mock/gomock"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
 	"github.com/vtfr/bossanova/mocks"
 	"github.com/vtfr/bossanova/model"
 	"github.com/vtfr/bossanova/service"
 )
 
-func TestExtractToken(t *testing.T) {
-	g := goblin.Goblin(t)
-	g.Describe("ExtractToken", func() {
-		g.It("Should extract a valid token from request and return it", func() {
-			value, err := service.ExtractToken("Bearer token")
-			g.Assert(value).Equal("token")
-			g.Assert(err).Equal(nil)
-		})
-		g.It("Should return error if invalid token prefix", func() {
-			value, err := service.ExtractToken("invalid token")
-			g.Assert(value).Equal("")
-			g.Assert(err != nil).IsTrue()
-		})
+var _ = Describe("ExtractToken", func() {
+	It("should extract a valid token from request and return it", func() {
+		value, err := service.ExtractToken("Bearer token")
+		Expect(value).To(Equal("token"))
+		Expect(err).To(BeNil())
 	})
+	It("should return error if invalid token prefix", func() {
+		value, err := service.ExtractToken("invalid token")
+		Expect(value).To(Equal(""))
+		Expect(err).NotTo(BeNil())
+	})
+})
 
-}
+var ()
 
-func TestAuthenticator(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
+var _ = Describe("Service", func() {
 
-	userStore := mocks.NewMockStore(mockCtrl)
-	auth := service.NewAuthenticator(userStore, []byte("secret"))
+})
 
-	sample := &model.User{
-		Username: "sample",
-		Role:     "admin",
-	}
-
+var _ = Describe("Authentication", func() {
+	var auth service.Authenticator
+	var mockCtrl *gomock.Controller
+	var mockStore *mocks.MockStore
 	var token string
 
-	g := goblin.Goblin(t)
-	g.Describe("Authenticator", func() {
-		g.It("Should generate valid tokens", func() {
-			// generate token
-			var err error
-			token, err = auth.CreateToken(sample)
-			g.Assert(err == nil).IsTrue("failed generating token")
-		})
-		g.It("Should fail to parse invalid tokens", func() {
-			user, err := auth.AuthenticateToken("invalid")
-			g.Assert(user == nil).IsTrue()
-			g.Assert(err != nil).IsTrue()
-		})
-		g.It("Should be able to parse valid tokens if user exists", func() {
-			userStore.EXPECT().GetUser(sample.Username).
-				Return(sample, nil).
-				Times(1)
+	sample := model.NewUser("sample", "password", "admin")
 
-			user, err := auth.AuthenticateToken(token)
-			g.Assert(err == nil).IsTrue("failed getting/parsing user")
-
-			// verify same users
-			g.Assert(user.Username == sample.Username)
-		})
-		g.It("Should return error if no users exists", func() {
-			userStore.EXPECT().GetUser(sample.Username).
-				Return(nil, errors.New("no user")).
-				Times(1)
-
-			// parse request
-			user, err := auth.AuthenticateToken(token)
-			g.Assert(err != nil).IsTrue()
-			g.Assert(user == nil).IsTrue()
-		})
+	BeforeEach(func() {
+		mockCtrl = gomock.NewController(GinkgoT())
+		mockStore = mocks.NewMockStore(mockCtrl)
+		auth = service.NewAuthenticator(mockStore, []byte("secret"))
 	})
-}
+	AfterEach(func() {
+		mockCtrl.Finish()
+	})
+	It("should generate valid tokens", func() {
+		var err error
+		token, err = auth.CreateToken(sample)
+		Expect(err).To(BeNil())
+	})
+	It("should fail to parse invalid tokens", func() {
+		_, err := auth.AuthenticateToken("invalid")
+		Expect(err).NotTo(BeNil())
+	})
+	It("should be able to parse valid tokens if user exists", func() {
+		mockStore.EXPECT().GetUser(sample.Username).
+			Return(sample, nil).
+			Times(1)
+
+		user, err := auth.AuthenticateToken(token)
+		Expect(err).To(BeNil())
+		Expect(user).To(Equal(sample))
+	})
+	It("should return error if no users exists", func() {
+		mockStore.EXPECT().GetUser(sample.Username).
+			Return(nil, errors.New("no user")).
+			Times(1)
+
+		_, err := auth.AuthenticateToken(token)
+		Expect(err).NotTo(BeNil())
+	})
+})

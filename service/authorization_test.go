@@ -2,73 +2,71 @@ package service_test
 
 import (
 	"strings"
-	"testing"
 
-	"github.com/franela/goblin"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
 	"github.com/vtfr/bossanova/model"
 	"github.com/vtfr/bossanova/service"
 )
 
-const samplePermissionData = `{
-	"roles": {
-		"roleA": [
-			"permissionA",
-			"permissionB"
-		],
-		"roleB": [
-			"permissionC",
-			"permissionD"
-		],
-		"default": [
-			"permissionA"
-		]
-	},
-	"inheritance": {
-		"roleA": [ "roleB" ]
-	}
-}`
+var _ = Describe("Authorization", func() {
+	const samplePermissionData = `{
+		"roles": {
+			"roleA": [
+				"permissionA",
+				"permissionB"
+			],
+			"roleB": [
+				"permissionC",
+				"permissionD"
+			],
+			"default": [
+				"permissionA"
+			]
+		},
+		"inheritance": {
+			"roleA": [ "roleB" ]
+		}
+	}`
 
-func TestAuthorizator(t *testing.T) {
 	var auth service.Authorizator
 
-	g := goblin.Goblin(t)
-	g.Describe("Authorizator", func() {
-		g.It("Should warn on malformed configuration file", func() {
-			r := strings.NewReader(`{
-				"roles": {
-					"roleA": true,
-				}
-			}`)
+	It("should fail on malformed configuration file", func() {
+		r := strings.NewReader(`{
+			"roles": {
+				"roleA": true,
+			}
+		}`)
 
-			_, err := service.NewAuthorizatorFromFile(r)
-			g.Assert(err != nil).IsTrue()
-		})
-		g.It("Should read from the configuration file", func() {
-			r := strings.NewReader(samplePermissionData)
-
-			var err error
-			auth, err = service.NewAuthorizatorFromFile(r)
-			g.Assert(err == nil).IsTrue()
-		})
-		g.It("Should authorize correctly", func() {
-			userA := &model.User{Role: "roleA"}
-			userB := &model.User{Role: "roleB"}
-
-			g.Assert(auth.IsAuthorized(userA, "permissionA")).IsTrue()
-			g.Assert(auth.IsAuthorized(userA, "permissionB")).IsTrue()
-			g.Assert(auth.IsAuthorized(userA, "permissionC")).IsTrue()
-			g.Assert(auth.IsAuthorized(userA, "permissionD")).IsTrue()
-
-			g.Assert(auth.IsAuthorized(userB, "permissionA")).IsFalse()
-			g.Assert(auth.IsAuthorized(userB, "permissionB")).IsFalse()
-			g.Assert(auth.IsAuthorized(userB, "permissionC")).IsTrue()
-			g.Assert(auth.IsAuthorized(userB, "permissionD")).IsTrue()
-		})
-		g.It("Should authorize default correctly", func() {
-			g.Assert(auth.IsAuthorized(nil, "permissionA")).IsTrue()
-			g.Assert(auth.IsAuthorized(nil, "permissionB")).IsFalse()
-			g.Assert(auth.IsAuthorized(nil, "permissionC")).IsFalse()
-			g.Assert(auth.IsAuthorized(nil, "permissionD")).IsFalse()
-		})
+		_, err := service.NewAuthorizatorFromFile(r)
+		Expect(err).NotTo(BeNil())
 	})
-}
+	It("should read from the configuration file", func() {
+		r := strings.NewReader(samplePermissionData)
+
+		var err error
+		auth, err = service.NewAuthorizatorFromFile(r)
+		Expect(err).To(BeNil())
+	})
+	It("should authorize correctly", func() {
+		userA := &model.User{Role: "roleA"}
+		userB := &model.User{Role: "roleB"}
+
+		Expect(auth.IsAuthorized(userA, "permissionA")).To(BeTrue())
+		Expect(auth.IsAuthorized(userA, "permissionB")).To(BeTrue())
+		Expect(auth.IsAuthorized(userA, "permissionC")).To(BeTrue())
+		Expect(auth.IsAuthorized(userA, "permissionD")).To(BeTrue())
+
+		Expect(auth.IsAuthorized(userB, "permissionA")).To(BeFalse())
+		Expect(auth.IsAuthorized(userB, "permissionB")).To(BeFalse())
+		Expect(auth.IsAuthorized(userB, "permissionC")).To(BeTrue())
+		Expect(auth.IsAuthorized(userB, "permissionD")).To(BeTrue())
+	})
+	It("should authorize default correctly", func() {
+		Expect(auth.IsAuthorized(nil, "permissionA")).To(BeTrue())
+		Expect(auth.IsAuthorized(nil, "permissionB")).To(BeFalse())
+		Expect(auth.IsAuthorized(nil, "permissionC")).To(BeFalse())
+		Expect(auth.IsAuthorized(nil, "permissionD")).To(BeFalse())
+	})
+})
