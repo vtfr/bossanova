@@ -1,54 +1,39 @@
 package model_test
 
 import (
-	"testing"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-	"github.com/franela/goblin"
 	"github.com/vtfr/bossanova/model"
 )
 
-func TestBoard(t *testing.T) {
-	g := goblin.Goblin(t)
-	g.Describe("Board", func() {
-		g.It("Should be valid", func() {
-			boards := []struct {
-				Board *model.Board
-				Valid bool
-			}{
-				{
-					Board: &model.Board{
-						URI:  "b",
-						Name: "Random",
-					},
-					Valid: true,
-				},
-				{
-					Board: &model.Board{
-						URI: "b",
-					},
-					Valid: false,
-				},
-				{
-					Board: &model.Board{
-						URI: "",
-					},
-					Valid: false,
-				},
-				{
-					Board: &model.Board{
-						URI: "0",
-					},
-					Valid: false,
-				},
-			}
+var _ = Describe("Model", func() {
+	Context("board", func() {
+		It("should create a new board sucessfully", func() {
+			board := model.NewBoard("uri", "name", "description")
 
-			for _, b := range boards {
-				if b.Valid {
-					g.Assert(model.Validate(b.Board) == nil).IsTrue()
-				} else {
-					g.Assert(model.Validate(b.Board) == nil).IsFalse()
-				}
-			}
+			Expect(board.URI).To(Equal("uri"))
+			Expect(board.Name).To(Equal("name"))
+			Expect(board.Description).To(Equal("description"))
+			Expect(board.CreatedAt.IsZero()).To(BeFalse())
+			Expect(board.Valid()).To(BeNil())
+		})
+		It("should have a valid URI", func() {
+			By("creating a invalid boards")
+			Expect(model.NewBoard("", "name", "description").Valid()).ToNot(BeNil())
+			Expect(model.NewBoard("1", "name", "description").Valid()).ToNot(BeNil())
+			Expect(model.NewBoard("^d", "name", "description").Valid()).ToNot(BeNil())
+
+			By("creating a valid board")
+			Expect(model.NewBoard("uri", "name", "description").Valid()).To(BeNil())
+		})
+		It("should have a name", func() {
+			By("creating a invalid board")
+			Expect(model.NewBoard("uri", "", "description").Valid()).ToNot(BeNil())
+
+			By("creating a valid board")
+			Expect(model.NewBoard("uri", "name", "description").Valid()).To(BeNil())
 		})
 	})
-}
+
+})

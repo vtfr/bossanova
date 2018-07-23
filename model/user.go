@@ -25,6 +25,11 @@ func NewUser(username, password, role string) *User {
 	}
 }
 
+// Valid returns an error if the user is invalid
+func (user *User) Valid() error {
+	return Validate(user)
+}
+
 // HashPassword hashes a password using bcrypt with default cost.
 func HashPassword(password string) []byte {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

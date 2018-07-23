@@ -1,32 +1,42 @@
 package model_test
 
 import (
-	"github.com/franela/goblin"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
 	"github.com/vtfr/bossanova/model"
-	"testing"
-	"time"
 )
 
-// GenerateThreadID creates a new ThreadID based on the thread's subject,
-// comment and local time
-func TestGeneratePostID(t *testing.T) {
-	g := goblin.Goblin(t)
-	g.Describe("GeneratePostID", func() {
-		g.It("Should generate the same hash for multiple calls with the same arguments", func() {
-			t := time.Now()
+var _ = Describe("Model", func() {
+	Context("post", func() {
+		It("should create a new thread sucessfully", func() {
+			post := model.NewPost("", "board", "name", "subject", "comment", "ip")
 
-			h1 := model.GeneratePostID(t, "comment", "subject")
-			h2 := model.GeneratePostID(t, "comment", "subject")
-
-			g.Assert(h1 == h2).IsTrue()
+			Expect(post.IsReply()).To(BeFalse())
+			Expect(post.Board).To(Equal("board"))
+			Expect(post.Name).To(Equal("name"))
+			Expect(post.Subject).To(Equal("subject"))
+			Expect(post.Comment).To(Equal("comment"))
+			Expect(post.IP).To(Equal("ip"))
+			Expect(post.CreatedAt.IsZero()).To(BeFalse())
+			Expect(post.LastBumpedAt).NotTo(BeNil())
+			Expect(post.Valid()).To(BeNil())
 		})
-		g.It("Should generate different hashes for different arguments", func() {
-			t := time.Now()
+		It("should create a new reply sucessfully", func() {
+			post := model.NewPost("parent", "board", "name", "subject", "comment", "ip")
 
-			h1 := model.GeneratePostID(t, "comment one", "")
-			h2 := model.GeneratePostID(t, "comment two", "")
-
-			g.Assert(h1 == h2).IsFalse()
+			Expect(post.IsReply()).To(BeTrue())
+			Expect(post.Parent).To(Equal("parent"))
+			Expect(post.Board).To(Equal("board"))
+			Expect(post.Name).To(Equal("name"))
+			Expect(post.Subject).To(Equal("subject"))
+			Expect(post.Comment).To(Equal("comment"))
+			Expect(post.IP).To(Equal("ip"))
+			Expect(post.CreatedAt.IsZero()).To(BeFalse())
+			Expect(post.LastBumpedAt).To(BeNil())
+			Expect(post.Valid()).To(BeNil())
 		})
+
+		// TODO implement business logic checking
 	})
-}
+})

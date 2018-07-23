@@ -9,7 +9,7 @@ import (
 
 // Post is a comment
 type Post struct {
-	ID     string `json:"id" bson:"_id"`
+	ID     string `json:"id" bson:"_id" validate:"required"`
 	Parent string `json:"parent,omitempty" bson:"parent,omitempty"`
 	Board  string `json:"board,omitempty" bson:"board,omitempty" validate:"board,required"`
 
@@ -53,10 +53,15 @@ func NewPost(parent, board, name, subject, comment, ip string) *Post {
 	return post
 }
 
-// AddMedia adds a new media
-func (p *Post) AddMedia(m *Media) {
-	p.Medias = append(p.Medias, m)
+// Valid returns an error if the post is invalid
+func (post *Post) Valid() error {
+	return Validate(post)
 }
+
+// AddMedia adds a new media
+// func (p *Post) AddMedia(m *Media) {
+// 	p.Medias = append(p.Medias, m)
+// }
 
 // IsReply returns whether a post is a reply or not
 func (p *Post) IsReply() bool {
