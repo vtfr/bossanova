@@ -23,7 +23,7 @@ func init() {
 func Validate(v interface{}) error {
 	err := validate.Struct(v)
 	if err != nil {
-		return &common.ApiError{http.StatusBadRequest, err.Error()}
+		return common.NewApiError(http.StatusBadRequest, err.Error())
 	}
 	return nil
 }

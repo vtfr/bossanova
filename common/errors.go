@@ -21,6 +21,14 @@ func (e *ApiError) Code() int {
 	return e.Status
 }
 
+// NewApiError creates a new API error
+func NewApiError(status int, message string) *ApiError {
+	return &ApiError{
+		Status:  status,
+		Message: message,
+	}
+}
+
 var (
 	// ErrNotFound is an error associated with a 404 response
 	ErrNotFound = &ApiError{http.StatusNotFound, "resource not found"}
