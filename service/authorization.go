@@ -47,8 +47,8 @@ func NewAuthorizator(roles map[string][]string,
 	for roleName := range roles {
 		role := gorbac.NewStdRole(roleName)
 		for _, permissionName := range roles[roleName] {
-			premission := gorbac.NewStdPermission(permissionName)
-			role.Assign(premission)
+			permission := gorbac.NewStdPermission(permissionName)
+			role.Assign(permission)
 		}
 
 		rbac.Add(role)
