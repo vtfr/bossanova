@@ -1,9 +1,0 @@
-{
-	"name": "demo",
-	"address": ":8080",
-	"tokenSecret": "jboIYVBVIBlkvhkkvh",
-	"database": {
-		"url": "127.0.0.1:27017",
-		"name": "tupiniquim"
-	}
-}
