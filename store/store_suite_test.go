@@ -1,4 +1,4 @@
-package st_test
+package store_test
 
 import (
 	"testing"
@@ -16,20 +16,27 @@ func TestStore(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	if testing.Short() {
-		Skip("Skipping suite as tests are short")
-	}
+	if !testing.Short() {
+		sti, err := store.NewStore("mongodb://localhost:27017", "tests")
+		if err != nil {
+			Fail("Failed connecting to local database. Skipping tests")
+		}
 
-	st, err := st.NewStore("mongodb://localhost:27017", "tests")
-	if err != nil {
-		Skip("Failed connecting to local database. Skipping tests")
+		st = sti.(*store.MongoStore)
+		st.Database().DropDatabase()
 	}
-
-	st = st.(*st.MongoStore)
-	st.Database().DropDatabase()
 })
 
+// WhenTestingStoreIt is used to skip tests if no database is set
+func SkipIfShort() {
+	if testing.Short() {
+		Skip("Skipping because testing is short")
+	}
+}
+
 var _ = AfterSuite(func() {
-	st.Database().DropDatabase()
-	st.Close()
+	if !testing.Short() {
+		st.Database().DropDatabase()
+		st.Close()
+	}
 })
