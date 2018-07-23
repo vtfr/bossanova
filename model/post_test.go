@@ -7,36 +7,34 @@ import (
 	"github.com/vtfr/bossanova/model"
 )
 
-var _ = Describe("Model", func() {
-	Context("post", func() {
-		It("should create a new thread sucessfully", func() {
-			post := model.NewPost("", "board", "name", "subject", "comment", "ip")
+var _ = Describe("Post", func() {
+	It("should create a new thread sucessfully", func() {
+		post := model.NewPost("", "board", "name", "subject", "comment", "ip")
 
-			Expect(post.IsReply()).To(BeFalse())
-			Expect(post.Board).To(Equal("board"))
-			Expect(post.Name).To(Equal("name"))
-			Expect(post.Subject).To(Equal("subject"))
-			Expect(post.Comment).To(Equal("comment"))
-			Expect(post.IP).To(Equal("ip"))
-			Expect(post.CreatedAt.IsZero()).To(BeFalse())
-			Expect(post.LastBumpedAt).NotTo(BeNil())
-			Expect(post.Valid()).To(BeNil())
-		})
-		It("should create a new reply sucessfully", func() {
-			post := model.NewPost("parent", "board", "name", "subject", "comment", "ip")
-
-			Expect(post.IsReply()).To(BeTrue())
-			Expect(post.Parent).To(Equal("parent"))
-			Expect(post.Board).To(Equal("board"))
-			Expect(post.Name).To(Equal("name"))
-			Expect(post.Subject).To(Equal("subject"))
-			Expect(post.Comment).To(Equal("comment"))
-			Expect(post.IP).To(Equal("ip"))
-			Expect(post.CreatedAt.IsZero()).To(BeFalse())
-			Expect(post.LastBumpedAt).To(BeNil())
-			Expect(post.Valid()).To(BeNil())
-		})
-
-		// TODO implement business logic checking
+		Expect(post.IsReply()).To(BeFalse())
+		Expect(post.Board).To(Equal("board"))
+		Expect(post.Name).To(Equal("name"))
+		Expect(post.Subject).To(Equal("subject"))
+		Expect(post.Comment).To(Equal("comment"))
+		Expect(post.IP).To(Equal("ip"))
+		Expect(post.CreatedAt.IsZero()).To(BeFalse())
+		Expect(post.LastBumpedAt).NotTo(BeNil())
+		Expect(post.Valid()).To(BeNil())
 	})
+	It("should create a new reply sucessfully", func() {
+		post := model.NewPost("parent", "board", "name", "subject", "comment", "ip")
+
+		Expect(post.IsReply()).To(BeTrue())
+		Expect(post.Parent).To(Equal("parent"))
+		Expect(post.Board).To(Equal("board"))
+		Expect(post.Name).To(Equal("name"))
+		Expect(post.Subject).To(Equal("subject"))
+		Expect(post.Comment).To(Equal("comment"))
+		Expect(post.IP).To(Equal("ip"))
+		Expect(post.CreatedAt.IsZero()).To(BeFalse())
+		Expect(post.LastBumpedAt).To(BeNil())
+		Expect(post.Valid()).To(BeNil())
+	})
+
+	// TODO implement business logic checking
 })
