@@ -12,7 +12,7 @@ var _ = Describe("User", func() {
 		user := model.NewUser("username", "password", "role")
 
 		Expect(user.Username).To(Equal("username"))
-		Expect(user.Valid()).To(BeNil())
+		Expect(user.Valid()).ToNot(HaveOccurred())
 		Expect(user.Role).To(Equal("role"))
 	})
 	It("should be able to set a password", func() {

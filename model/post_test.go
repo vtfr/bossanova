@@ -18,8 +18,8 @@ var _ = Describe("Post", func() {
 		Expect(post.Comment).To(Equal("comment"))
 		Expect(post.IP).To(Equal("ip"))
 		Expect(post.CreatedAt.IsZero()).To(BeFalse())
-		Expect(post.LastBumpedAt).NotTo(BeNil())
-		Expect(post.Valid()).To(BeNil())
+		Expect(post.LastBumpedAt).ToNot(BeNil())
+		Expect(post.Valid()).ToNot(HaveOccurred())
 	})
 	It("should create a new reply sucessfully", func() {
 		post := model.NewPost("parent", "board", "name", "subject", "comment", "ip")
@@ -33,7 +33,7 @@ var _ = Describe("Post", func() {
 		Expect(post.IP).To(Equal("ip"))
 		Expect(post.CreatedAt.IsZero()).To(BeFalse())
 		Expect(post.LastBumpedAt).To(BeNil())
-		Expect(post.Valid()).To(BeNil())
+		Expect(post.Valid()).ToNot(HaveOccurred())
 	})
 
 	// TODO implement business logic checking
